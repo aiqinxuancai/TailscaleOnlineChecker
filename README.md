@@ -41,9 +41,93 @@
 2. 在应用中生成推送密钥
 3. 复制密钥用于配置
 
-## Docker 部署（推荐）
+## Docker 部署
 
-### 1. 创建环境变量文件
+### 方式一：使用 GHCR 预构建镜像（推荐）
+
+项目已配置 GitHub Actions 自动构建，每次推送代码到 main/master 分支或创建新标签时，会自动构建并推送镜像到 GitHub Container Registry (GHCR)。
+
+#### 1. 创建 docker-compose.yml 文件
+
+```yaml
+version: '3.8'
+
+services:
+  tailscale-checker:
+    # 使用 GHCR 上的预构建镜像
+    # 将 username/repository 替换为你的 GitHub 用户名和仓库名
+    image: ghcr.io/username/tailscaleonlinechecker:latest
+    container_name: tailscale-online-checker
+    restart: unless-stopped
+
+    environment:
+      - TAILSCALE_OAUTH_KEY=${TAILSCALE_OAUTH_KEY}
+      - PUSHDEER_PUSHKEY=${PUSHDEER_PUSHKEY}
+      - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
+      - DEVICE_NAME_FILTER=${DEVICE_NAME_FILTER}
+      - CHECK_INTERVAL_MINUTES=${CHECK_INTERVAL_MINUTES:-30}
+      - TZ=Asia/Shanghai
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+```
+
+#### 2. 创建环境变量文件
+
+在同一目录创建 `.env` 文件：
+
+```bash
+# Tailscale 配置
+TAILSCALE_OAUTH_KEY=your_oauth_key_here
+TAILSCALE_TAILNET=your-org.ts.net
+
+# PushDeer 配置
+PUSHDEER_PUSHKEY=your_pushdeer_key_here
+
+# 设备过滤
+DEVICE_NAME_FILTER=your_device_keyword
+
+# 检查间隔（可选，单位：分钟）
+CHECK_INTERVAL_MINUTES=30
+```
+
+#### 3. 启动容器
+
+```bash
+# 拉取最新镜像并启动容器
+docker-compose pull
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止容器
+docker-compose down
+```
+
+#### 4. 使用特定版本的镜像
+
+如果你想使用特定版本的镜像，可以在 docker-compose.yml 中指定标签：
+
+```yaml
+# 使用 latest 标签（最新版本）
+image: ghcr.io/username/tailscaleonlinechecker:latest
+
+# 使用特定版本标签
+image: ghcr.io/username/tailscaleonlinechecker:v1.0.0
+
+# 使用特定分支的构建
+image: ghcr.io/username/tailscaleonlinechecker:main-abc1234
+```
+
+### 方式二：本地构建镜像
+
+如果你需要修改代码或自定义构建，可以使用本地 Dockerfile 构建。
+
+#### 1. 创建环境变量文件
 
 在项目根目录创建 `.env` 文件：
 
