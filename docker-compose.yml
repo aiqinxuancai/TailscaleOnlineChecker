@@ -31,8 +31,8 @@ services:
       # 只监控包含此关键字的设备
       - DEVICE_NAME_FILTER=${DEVICE_NAME_FILTER}
 
-      # 检查间隔（可选，单位：分钟，默认：5）
-      - CHECK_INTERVAL_MINUTES=${CHECK_INTERVAL_MINUTES:-5}
+      # 检查间隔（可选，单位：分钟，默认：30）
+      - CHECK_INTERVAL_MINUTES=${CHECK_INTERVAL_MINUTES:-30}
 
       # 时区设置（可选）
       - TZ=Asia/Shanghai

@@ -27,7 +27,7 @@
 | `PUSHDEER_PUSHKEY` | PushDeer 推送密钥 | ✅ 必需 | - |
 | `TAILSCALE_TAILNET` | Tailscale 网络名称 | ✅ 必需 | - |
 | `DEVICE_NAME_FILTER` | 设备名称过滤关键字 | ✅ 必需 | - |
-| `CHECK_INTERVAL_MINUTES` | 检查间隔（分钟） | ❌ 可选 | 5 |
+| `CHECK_INTERVAL_MINUTES` | 检查间隔（分钟） | ❌ 可选 | 30 |
 
 ### 获取 Tailscale OAuth 密钥
 
@@ -110,48 +110,14 @@ dotnet run
 6. 如果设备离线超过 60 分钟，通过 PushDeer 发送推送通知
 7. 等待指定的时间间隔后，重复上述过程
 
-## 日志说明
-
-程序运行时会输出以下日志信息：
-
-- `Tailscale Online Checker Starting...` - 程序启动
-- `Check interval: X minutes` - 检查间隔配置
-- `Starting check...` - 开始检查
-- `Check completed.` - 检查完成
-- `推送了` - 已发送离线通知
-- `设备在线，无需推送` - 设备在线，无需通知
-- `Error occurred: ...` - 发生错误
-
 ## 注意事项
 
-1. **API 频率限制**：请合理设置检查间隔，避免触发 Tailscale API 的频率限制
+1. **API 频率限制**：请合理设置检查间隔，避免触发 Tailscale API 的频率限制，建议>30分钟
 2. **OAuth 权限**：确保 OAuth 密钥具有读取设备信息的权限
-3. **网络连接**：程序需要能够访问 Tailscale API 和 PushDeer API
-4. **时区设置**：默认使用 Asia/Shanghai 时区，可在 docker-compose.yml 中修改
-
-## 故障排查
-
-### 问题：提示环境变量未设置
-
-**解决方案**：检查 `.env` 文件是否正确配置，确保所有必需的环境变量都已设置。
-
-### 问题：无法获取 OAuth 令牌
-
-**解决方案**：
-- 检查 `TAILSCALE_OAUTH_KEY` 是否正确
-- 确认 OAuth 密钥是否已过期或被撤销
-- 检查网络连接是否正常
-
-### 问题：没有收到推送通知
-
-**解决方案**：
-- 检查 `PUSHDEER_PUSHKEY` 是否正确
-- 确认设备确实离线超过 60 分钟
-- 检查设备名称是否包含 `DEVICE_NAME_FILTER` 中的关键字
 
 ## 技术栈
 
-- .NET 10.0 / 9.0
+- .NET 10.0
 - Flurl.Http - HTTP 请求库
 - Newtonsoft.Json - JSON 序列化库
 - Docker - 容器化部署
@@ -159,7 +125,3 @@ dotnet run
 ## 许可证
 
 本项目仅供学习和个人使用。
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
