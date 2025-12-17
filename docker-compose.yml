@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  tailscale-checker:
+    # 服务名称
+    container_name: tailscale-online-checker
+
+    # 使用当前目录的 Dockerfile 构建镜像
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # 容器重启策略：除非手动停止，否则总是重启
+    restart: unless-stopped
+
+    # 环境变量配置
+    environment:
+      # Tailscale OAuth 密钥（必需）
+      # 从 https://login.tailscale.com/admin/settings/oauth 获取
+      - TAILSCALE_OAUTH_KEY=${TAILSCALE_OAUTH_KEY}
+
+      # PushDeer 推送密钥（必需）
+      # 从 PushDeer 应用获取
+      - PUSHDEER_PUSHKEY=${PUSHDEER_PUSHKEY}
+
+      # Tailscale 网络名称（必需）
+      # 格式通常为：your-org.ts.net 或 your-email@domain.com
+      - TAILSCALE_TAILNET=${TAILSCALE_TAILNET}
+
+      # 设备名称过滤器（必需）
+      # 只监控包含此关键字的设备
+      - DEVICE_NAME_FILTER=${DEVICE_NAME_FILTER}
+
+      # 检查间隔（可选，单位：分钟，默认：5）
+      - CHECK_INTERVAL_MINUTES=${CHECK_INTERVAL_MINUTES:-5}
+
+      # 时区设置（可选）
+      - TZ=Asia/Shanghai
+
+    # 日志配置：限制日志文件大小
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
