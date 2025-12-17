@@ -54,8 +54,6 @@ version: '3.8'
 
 services:
   tailscale-checker:
-    # 使用 GHCR 上的预构建镜像
-    # 将 username/repository 替换为你的 GitHub 用户名和仓库名
     image: ghcr.io/aiqinxuancai/tailscaleonlinechecker:latest
     container_name: tailscale-online-checker
     restart: unless-stopped
